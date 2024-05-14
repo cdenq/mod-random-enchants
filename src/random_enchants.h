@@ -18,7 +18,7 @@ enum ItemQuality
 };
 
 void rollPossibleEnchant(Player* player, Item* item);
-[[nodiscard]] uint32 getRandEnchantment(Item* item);
+[[nodiscard]] std::tuple<uint32, int, uint8> getRandEnchantment(Item* item);
 
 class RandomEnchantsPlayer : public PlayerScript
 {

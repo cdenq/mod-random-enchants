@@ -1,4 +1,5 @@
 #include "random_enchants.h"
+#include <tuple>
 
 void rollPossibleEnchant(Player* player, Item* item)
 {
@@ -20,6 +21,9 @@ void rollPossibleEnchant(Player* player, Item* item)
 
     int slotRand[3] = { -1, -1, -1 };
     uint32 slotEnch[3] = { 0, 1, 5 };
+    std::array<int, 3> rarityRoll = { -1, -1, -1 };
+    std::array<uint8, 3> tier = { 0, 0, 0 };
+    uint32 enchantId;
 
     // Fetching the configuration values as float
     float enchantChance1 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance1", 70.0f);
@@ -27,11 +31,20 @@ void rollPossibleEnchant(Player* player, Item* item)
     float enchantChance3 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance3", 60.0f);
 
     if (rand_chance() < enchantChance1)
-        slotRand[0] = getRandEnchantment(item);
+    {
+        std::tie(enchantId, rarityRoll[0], tier[0]) = getRandEnchantment(item);
+        slotRand[0] = static_cast<int>(enchantId);
+    }
     if (slotRand[0] != -1 && rand_chance() < enchantChance2)
-        slotRand[1] = getRandEnchantment(item);
+    {
+        std::tie(enchantId, rarityRoll[1], tier[1]) = getRandEnchantment(item);
+        slotRand[1] = static_cast<int>(enchantId);
+    }
     if (slotRand[1] != -1 && rand_chance() < enchantChance3)
-        slotRand[2] = getRandEnchantment(item);
+    {
+        std::tie(enchantId, rarityRoll[2], tier[2]) = getRandEnchantment(item);
+        slotRand[2] = static_cast<int>(enchantId);
+    }
 
     for (int i = 0; i < 3; i++)
     {
@@ -54,16 +67,15 @@ void rollPossibleEnchant(Player* player, Item* item)
     if (ItemLocale const* il = sObjectMgr->GetItemLocale(temp->ItemId))
         ObjectMgr::GetLocaleString(il->Name, loc_idx, name);
 
-
     if (slotRand[2] != -1)
-        chathandle.PSendSysMessage("Newly Acquired |cffFF0000 %s |rhas received|cffFF0000 3 |rrandom enchantments!", name);
+        chathandle.PSendSysMessage("Newly acquired |cffFF0000 %s |rwas found with |cffFF0000 3 |rextra enchantments! (Rarity Rolls: %d, %d, %d; Enchantment Tiers: %u, %u, %u)", name, rarityRoll[0], rarityRoll[1], rarityRoll[2], tier[0], tier[1], tier[2]);
     else if (slotRand[1] != -1)
-        chathandle.PSendSysMessage("Newly Acquired |cffFF0000 %s |rhas received|cffFF0000 2 |rrandom enchantments!", name);
+        chathandle.PSendSysMessage("Newly acquired |cffFF0000 %s |rwas found with |cffFF0000 2 |rextra enchantments! (Rarity Rolls: %d, %d; Enchantment Tiers: %u, %u)", name, rarityRoll[0], rarityRoll[1], tier[0], tier[1]);
     else if (slotRand[0] != -1)
-        chathandle.PSendSysMessage("Newly Acquired |cffFF0000 %s |rhas received|cffFF0000 1 |rrandom enchantment!", name);
+        chathandle.PSendSysMessage("Newly acquired |cffFF0000 %s |rwas found with |cffFF0000 1 |rextra enchantment! (Rarity Roll: %d; Enchantment Tier: %u)", name, rarityRoll[0], tier[0]);
 }
 
-uint32 getRandEnchantment(Item* item)
+std::tuple<uint32, int, uint8> getRandEnchantment(Item* item)
 {
     uint32 itemClass = item->GetTemplate()->Class;
     uint32 itemQuality = item->GetTemplate()->Quality;
@@ -82,7 +94,7 @@ uint32 getRandEnchantment(Item* item)
     }
 
     if (classQueryString == "")
-        return -1;
+        return std::make_tuple(0, 0, 0);
 
     switch (itemQuality)
     {
@@ -106,8 +118,9 @@ uint32 getRandEnchantment(Item* item)
             break;
     }
 
+    // resolve negative rarity roll
     if (rarityRoll < 0)
-        return -1;
+        return std::make_tuple(0, 0, 0);
 
     if (rarityRoll <= 44)
         tier = 1;
@@ -123,9 +136,9 @@ uint32 getRandEnchantment(Item* item)
     QueryResult result = WorldDatabase.Query("SELECT `enchantID` FROM `item_enchantment_random_tiers` WHERE `tier`={} AND `exclusiveSubClass`=NULL AND exclusiveSubClass='{}' OR `class`='{}' OR `class`='ANY' ORDER BY RAND() LIMIT 1", tier, item->GetTemplate()->SubClass, classQueryString, classQueryString);
 
     if (!result)
-        return 0;
+        return std::make_tuple(0, 0, 0);
 
-    return result->Fetch()[0].Get<uint32>();
+    return std::make_tuple(result->Fetch()[0].Get<uint32>(), rarityRoll, tier);
 }
 
 void RandomEnchantsPlayer::OnLogin(Player* player)
