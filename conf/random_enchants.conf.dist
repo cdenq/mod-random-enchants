@@ -45,7 +45,7 @@ RandomEnchants.OnCreate=1
 #        Chance at random enchant on obtaining item from quest reward
 #        Default:     1
 
-RandomEnchants.OnQuestReward=1
+RandomEnchants.OnQuestReward=0
 
 #
 #     RandomEnchants.OnGroupRoll 
@@ -58,18 +58,18 @@ RandomEnchants.OnGroupRoll = 1
 #        Probability (in percentage) for the first enchant to be applied.
 #        Default:     70.0
 
-RandomEnchants.EnchantChance1=70.0
+RandomEnchants.EnchantChance1=25.0
 
 #
 #     RandomEnchants.EnchantChance2
 #        Probability (in percentage) for the second enchant to be applied (only if the first enchant is applied).
 #        Default:     65.0
 
-RandomEnchants.EnchantChance2=65.0
+RandomEnchants.EnchantChance2=25.0
 
 #
 #     RandomEnchants.EnchantChance3
 #        Probability (in percentage) for the third enchant to be applied (only if the second enchant is applied).
 #        Default:     60.0
 
-RandomEnchants.EnchantChance3=60.0
+RandomEnchants.EnchantChance3=25.0
