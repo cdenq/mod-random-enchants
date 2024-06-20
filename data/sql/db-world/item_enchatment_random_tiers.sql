@@ -201,7 +201,7 @@ INSERT INTO `item_enchantment_random_tiers` (`enchantID`, `tier`, `class`, `excl
 	(1093, 20, 'ANY', NULL),
 	(1067, 20, 'ANY', NULL),
 	(1621, 20, 'ANY', NULL),
-	(3854, 20, 'ANY', NULL)
+	(3854, 20, 'ANY', NULL);
 /*!40000 ALTER TABLE `item_enchantment_random_tiers` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
