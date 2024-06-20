@@ -58,7 +58,7 @@ void rollPossibleEnchant(Player* player, Item* item)
 
     if (slotRand != -1)
     {
-        chathandle.PSendSysMessage("Your |cffFF0000 %s |rwas found with an extra enchantment! (Rarity Roll: %d - Tier: %u)", name, rarityRoll, tier);
+        chathandle.PSendSysMessage("Your|cffFF0000 %s |rwas found with an extra enchantment! (Rarity Roll: %d - Tier: %u)", name, rarityRoll, tier);
     }
 }
 
@@ -85,7 +85,7 @@ std::tuple<uint32, int, uint8> getRandEnchantment(Item* item)
         return std::make_tuple(0, 0, 0);
 
     // Item level flat addition to rarity roll
-    if (itemLevel <= 200) // if northrend HC dungeon or less... 
+    if (itemLevel < 200) // if not a northrend HC dungeon piece... 
         switch (itemQuality) // give bonus on quality AND...
         {
             case PURPLE:
@@ -96,36 +96,34 @@ std::tuple<uint32, int, uint8> getRandEnchantment(Item* item)
                 break;
         }
         rarityRoll += (rand_norm() * 5); // ... +random (1-5)
-    // if item level 200 or less, then it's just raid gear, so no changes. just its flat item level will scale w enchants
+    // if item level 200 or more, then it's just raid gear, so no changes. just its flat item level will scale w enchants
 
     // check negs, just in case
     if (rarityRoll < 0)
         return std::make_tuple(0, 0, 0);
 
     // check tiers
-    // item level threshold was determined by... 
-    // round(min(level range) + (level range)/2,0) 
-    if (rarityRoll <= 14) // Lvl Req 1,10: itemLevel 28-1
+    if (rarityRoll <= 15) // Lvl Req 1,10: itemLevel 28-1
         tier = 1;
     else if (rarityRoll <= 20) // Lvl Req 10,15: itemLevel 31-10
         tier = 2;
     else if (rarityRoll <= 25) // Lvl Req 15,20: itemLevel 35-16
         tier = 3;
-    else if (rarityRoll <= 29) // Lvl Req 20,25: itemLevel 40-19
+    else if (rarityRoll <= 30) // Lvl Req 20,25: itemLevel 40-19
         tier = 4;
-    else if (rarityRoll <= 39) // Lvl Req 25,30: itemLevel 50-28
+    else if (rarityRoll <= 35) // Lvl Req 25,30: itemLevel 50-28
         tier = 5;
-    else if (rarityRoll <= 41) // Lvl Req 30,35: itemLevel 50-32
+    else if (rarityRoll <= 40) // Lvl Req 30,35: itemLevel 50-32
         tier = 6;
-    else if (rarityRoll <= 48) // Lvl Req 35,40: itemLevel 59-36
+    else if (rarityRoll <= 44) // Lvl Req 35,40: itemLevel 59-36
         tier = 7;
-    else if (rarityRoll <= 50) // Lvl Req 40,45: itemLevel 60-40
+    else if (rarityRoll <= 48) // Lvl Req 40,45: itemLevel 60-40
         tier = 8;
-    else if (rarityRoll <= 54) // Lvl Req 45,50: itemLevel 60-48
+    else if (rarityRoll <= 52) // Lvl Req 45,50: itemLevel 60-48
         tier = 9;
     else if (rarityRoll <= 56) // Lvl Req 50,55: itemLevel 61-52
         tier = 10;
-    else if (rarityRoll <= 58) // Lvl Req 55,60(vanilla): itemLevel 65-52
+    else if (rarityRoll <= 65) // Lvl Req 55,60(vanilla): itemLevel 65-52
         tier = 11;
     else if (rarityRoll <= 88) // Lvl Req 57(outland),65: itemLevel 111-66
         tier = 12;
